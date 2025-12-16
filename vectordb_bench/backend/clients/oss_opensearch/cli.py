@@ -133,8 +133,8 @@ class OSSOpenSearchTypedDict(TypedDict):
         str | None,
         click.option(
             "--engine",
-            type=click.Choice(["faiss", "lucene"]),
-            help="quantization type for vectors (in index)",
+            type=click.Choice(["faiss", "lucene", "jvector"], case_sensitive=False),
+            help="Vector search engine to use (faiss/lucene use HNSW, jvector uses DiskANN)",
             default="faiss",
             required=False,
         ),
@@ -174,6 +174,7 @@ def OSSOpenSearch(**parameters: Unpack[OSSOpenSearchHNSWTypedDict]):
             quantization_type=OSSOpenSearchQuantization(parameters["quantization_type"]),
             confidence_interval=parameters["confidence_interval"],
             clip=parameters["clip"],
+            metric_type_name=parameters["metric_type"],
         ),
         **parameters,
     )

@@ -671,7 +671,11 @@ class OSSOpenSearch(VectorDB):
         log.info(f"Completed force merge for index {self.index_name}")
 
     def _load_graphs_to_memory(self, client: OpenSearch):
-        if self.case_config.engine != OSSOS_Engine.lucene:
-            log.info("Calling warmup API to load graphs into memory")
+        # Only faiss supports the warmup API endpoint
+        # Lucene and jvector don't have this endpoint
+        if self.case_config.engine == OSSOS_Engine.faiss:
+            log.info(f"Calling warmup API to load graphs into memory for engine: {self.case_config.engine}")
             warmup_endpoint = f"/_plugins/_knn/warmup/{self.index_name}"
             client.transport.perform_request("GET", warmup_endpoint)
+        else:
+            log.info(f"Skipping warmup API for engine: {self.case_config.engine} (not supported)")

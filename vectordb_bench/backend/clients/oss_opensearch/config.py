@@ -48,6 +48,7 @@ class OSSOpenSearchConfig(DBConfig, BaseModel):
 class OSSOS_Engine(Enum):
     faiss = "faiss"
     lucene = "lucene"
+    jvector = "jvector"
 
 
 class OSSOpenSearchQuantization(Enum):
@@ -137,6 +138,8 @@ class OSSOpenSearchIndexConfig(BaseModel, DBCaseConfig):
                 values["engine"] = OSSOS_Engine.faiss
             elif engine_name == "lucene":
                 values["engine"] = OSSOS_Engine.lucene
+            elif engine_name == "jvector":
+                values["engine"] = OSSOS_Engine.jvector
             else:
                 log.warning(f"Unknown engine_name: {engine_name}, defaulting to faiss")
                 values["engine"] = OSSOS_Engine.faiss
@@ -185,7 +188,7 @@ class OSSOpenSearchIndexConfig(BaseModel, DBCaseConfig):
         )
 
     def parse_metric(self) -> str:
-        log.info(f"User specified metric_type: {self.metric_type_name}")
+        log.info(f"User specified metric_type: {self.metric_type_name}")        
         self.metric_type = MetricType[self.metric_type_name.upper()]
         if self.metric_type == MetricType.IP:
             return "innerproduct"
@@ -224,6 +227,20 @@ class OSSOpenSearchIndexConfig(BaseModel, DBCaseConfig):
         )
 
         method_config = {
+        # JVector uses DiskANN algorithm
+        if self.engine == OSSOS_Engine.jvector:
+            return {
+                "name": "disk_ann",
+                "engine": self.engine.value,
+                "space_type": self.parse_metric(),
+                "parameters": {
+                    "ef_construction": self.efConstruction,
+                    "m": self.M,
+                },
+            }
+
+        # FAISS and Lucene use HNSW
+        return {
             "name": "hnsw",
             "engine": resolved_engine.value,
             "space_type": space_type,
