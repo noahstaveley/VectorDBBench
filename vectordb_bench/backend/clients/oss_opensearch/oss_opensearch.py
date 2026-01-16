@@ -588,14 +588,23 @@ class OSSOpenSearch(VectorDB):
     def optimize(self, data_size: int | None = None) -> None:
         """Optimize the index for better search performance."""
         self._update_ef_search()
-        # Call refresh first to ensure that all segments are created
-        self._refresh_index()
+        # only call refresh if not disabled
+        if self.case_config.refresh_interval != "-1":
+            self._refresh_index()
+        else:
+            log.info("Skipping initial refresh (refresh_interval is -1)")
         if self.case_config.force_merge_enabled:
             self._do_force_merge()
-            self._refresh_index()
+            if self.case_config.refresh_interval != "-1":
+                self._refresh_index()
+            else:
+                log.info("Skipping refresh after force merge (refresh_interval is -1)")
         self._update_replicas()
         # Call refresh again to ensure that the index is ready after force merge.
-        self._refresh_index()
+        if self.case_config.refresh_interval != "-1":
+            self._refresh_index()
+        else:
+            log.info("Skipping final refresh (refresh_interval is -1)")
         # ensure that all graphs are loaded in memory and ready for search
         self._load_graphs_to_memory(self.client)
 
