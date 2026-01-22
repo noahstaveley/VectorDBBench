@@ -459,9 +459,21 @@ class StreamingPerformanceCase(Case):
         )
 
         if isinstance(search_stages, str):
-            search_stages = json.loads(search_stages)
+            # Handle both JSON array format and comma-separated format
+            search_stages = search_stages.strip()
+            if search_stages.startswith('['):
+                search_stages = json.loads(search_stages)
+            else:
+                # Convert comma-separated string to list of floats
+                search_stages = [float(x.strip()) for x in search_stages.split(',')]
         if isinstance(concurrencies, str):
-            concurrencies = json.loads(concurrencies)
+            # Handle both JSON array format and comma-separated format
+            concurrencies = concurrencies.strip()
+            if concurrencies.startswith('['):
+                concurrencies = json.loads(concurrencies)
+            else:
+                # Convert comma-separated string to list of ints
+                concurrencies = [int(x.strip()) for x in concurrencies.split(',')]
 
         super().__init__(
             name=name,

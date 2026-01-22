@@ -193,6 +193,13 @@ def get_custom_case_config(parameters: dict) -> dict:
             "dataset_with_size_type": parameters["dataset_with_size_type"],
             "label_percentage": parameters["label_percentage"],
         }
+    elif parameters["case_type"] == "StreamingPerformanceCase":
+        custom_case_config = {
+            "dataset_with_size_type": parameters["dataset_with_size_type"],
+            "insert_rate": parameters["insert_rate"],
+            "search_stages": parameters["search_stages"],
+            "concurrencies": parameters["concurrencies"],
+        }
     return custom_case_config
 
 
@@ -452,6 +459,33 @@ class CommonTypedDict(TypedDict):
             "--label-percentage",
             help="Filter rate for LabelFilterPerformanceCase",
             default=0.01,
+            show_default=True,
+        ),
+    ]
+    insert_rate: Annotated[
+        int,
+        click.option(
+            "--insert-rate",
+            help="Insert rate (vectors/sec) for StreamingPerformanceCase",
+            default=500,
+            show_default=True,
+        ),
+    ]
+    search_stages: Annotated[
+        str,
+        click.option(
+            "--search-stages",
+            help="Search stages (comma-separated floats, e.g., '0.5,0.6,0.7,0.8,0.9') for StreamingPerformanceCase",
+            default="0.5,0.8",
+            show_default=True,
+        ),
+    ]
+    concurrencies: Annotated[
+        str,
+        click.option(
+            "--concurrencies",
+            help="Concurrency levels (comma-separated ints, e.g., '5,10,15') for StreamingPerformanceCase",
+            default="5,10",
             show_default=True,
         ),
     ]
