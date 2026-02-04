@@ -226,10 +226,9 @@ class OSSOpenSearchIndexConfig(BaseModel, DBCaseConfig):
             f"{'compression_level: ' + self.compression_level if self.on_disk else ''}"
         )
 
-        method_config = {
         # JVector uses DiskANN algorithm
         if self.engine == OSSOS_Engine.jvector:
-            return {
+            method_config = {
                 "name": "disk_ann",
                 "engine": self.engine.value,
                 "space_type": self.parse_metric(),
@@ -238,17 +237,17 @@ class OSSOpenSearchIndexConfig(BaseModel, DBCaseConfig):
                     "m": self.M,
                 },
             }
-
-        # FAISS and Lucene use HNSW
-        return {
-            "name": "hnsw",
-            "engine": resolved_engine.value,
-            "space_type": space_type,
-            "parameters": {
-                "ef_construction": self.efConstruction,
-                "m": self.M,
-            },
-        }
+        else:
+            # FAISS and Lucene use HNSW
+            method_config = {
+                "name": "hnsw",
+                "engine": resolved_engine.value,
+                "space_type": space_type,
+                "parameters": {
+                    "ef_construction": self.efConstruction,
+                    "m": self.M,
+                },
+            }
 
         # Add encoder for in-memory quantization
         if self.use_quant:
