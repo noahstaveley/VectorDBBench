@@ -140,6 +140,26 @@ class OSSOpenSearchTypedDict(TypedDict):
         ),
     ]
 
+    on_disk: Annotated[
+        bool,
+        click.option(
+            "--on-disk",
+            is_flag=True,
+            help="Enable disk-based vector storage with compression (requires OpenSearch 2.17+)",
+            default=False,
+        ),
+    ]
+
+    compression_level: Annotated[
+        str,
+        click.option(
+            "--compression-level",
+            type=click.Choice(["4x", "8x", "16x", "32x"], case_sensitive=False),
+            help="Compression level for disk-based storage (4x, 8x, 16x, 32x)",
+            default="32x",
+        ),
+    ]
+
 
 class OSSOpenSearchHNSWTypedDict(CommonTypedDict, OSSOpenSearchTypedDict, HNSWFlavor1): ...
 
@@ -175,6 +195,8 @@ def OSSOpenSearch(**parameters: Unpack[OSSOpenSearchHNSWTypedDict]):
             confidence_interval=parameters["confidence_interval"],
             clip=parameters["clip"],
             metric_type_name=parameters["metric_type"],
+            on_disk=parameters["on_disk"],
+            compression_level=parameters["compression_level"],
         ),
         **parameters,
     )
