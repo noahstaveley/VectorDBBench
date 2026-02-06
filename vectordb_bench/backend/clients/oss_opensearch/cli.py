@@ -96,6 +96,16 @@ class OSSOpenSearchTypedDict(TypedDict):
         ),
     ]
 
+    number_of_indexing_clients: Annotated[
+        int,
+        click.option(
+            "--number-of-indexing-clients",
+            type=int,
+            help="Number of concurrent indexing clients",
+            default=1,
+        ),
+    ]
+
     quantization_type: Annotated[
         str | None,
         click.option(
@@ -186,6 +196,7 @@ def OSSOpenSearch(**parameters: Unpack[OSSOpenSearchHNSWTypedDict]):
             force_merge_enabled=parameters["force_merge_enabled"],
             flush_threshold_size=parameters["flush_threshold_size"],
             index_thread_qty_during_force_merge=parameters["index_thread_qty_during_force_merge"],
+            number_of_indexing_clients=parameters["number_of_indexing_clients"],
             cb_threshold=parameters["cb_threshold"],
             efConstruction=parameters["ef_construction"],
             efSearch=parameters["ef_search"],
