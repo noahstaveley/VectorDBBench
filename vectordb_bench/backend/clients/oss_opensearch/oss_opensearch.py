@@ -448,7 +448,8 @@ class OSSOpenSearch(VectorDB):
 
         for i in range(0, len(embeddings_list), chunk_size):
             end = min(i + chunk_size, len(embeddings_list))
-            chunks.append((embeddings_list[i:end], metadata[i:end], labels_data[i:end]))
+            chunk_labels = labels_data[i:end] if labels_data is not None else None
+            chunks.append((embeddings_list[i:end], metadata[i:end], chunk_labels))
         clients = [OpenSearch(**self.db_config) for _ in range(min(num_clients, len(chunks)))]
         log.info(f"OSS_OpenSearch using {len(clients)} parallel clients for data insertion")
 
