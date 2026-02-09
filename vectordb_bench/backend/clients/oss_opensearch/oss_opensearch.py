@@ -486,7 +486,7 @@ class OSSOpenSearch(VectorDB):
             time.sleep(10)
             return self._insert_with_single_client(embeddings, metadata, labels_data)
 
-        response = self.client.indices.stats(self.index_name)
+        response = self.client.indices.stats(index=self.index_name)
         log.info(
             f"""Total document count in index after parallel insertion:
                 {response['_all']['primaries']['indexing']['index_total']}""",
