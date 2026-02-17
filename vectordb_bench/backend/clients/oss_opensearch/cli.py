@@ -170,6 +170,17 @@ class OSSOpenSearchTypedDict(TypedDict):
         ),
     ]
 
+    min_batch_size_for_quantization: Annotated[
+        int | None,
+        click.option(
+            "--min-batch-size-for-quantization",
+            type=int,
+            help="Minimum batch size for quantization in JVector (advanced parameter)",
+            default=None,
+            required=False,
+        ),
+    ]
+
 
 class OSSOpenSearchHNSWTypedDict(CommonTypedDict, OSSOpenSearchTypedDict, HNSWFlavor1): ...
 
@@ -208,6 +219,7 @@ def OSSOpenSearch(**parameters: Unpack[OSSOpenSearchHNSWTypedDict]):
             metric_type_name=parameters["metric_type"],
             on_disk=parameters["on_disk"],
             compression_level=parameters["compression_level"],
+            min_batch_size_for_quantization=parameters["min_batch_size_for_quantization"],
         ),
         **parameters,
     )

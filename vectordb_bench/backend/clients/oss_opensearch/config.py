@@ -111,6 +111,7 @@ class OSSOpenSearchIndexConfig(BaseModel, DBCaseConfig):
     on_disk: bool = False
     compression_level: str = CompressionLevel.LEVEL_32X
     oversample_factor: float = 1.0
+    min_batch_size_for_quantization: int | None = None
 
     @validator("quantization_type", pre=True, always=True)
     def validate_quantization_type(cls, value: any):
@@ -237,6 +238,10 @@ class OSSOpenSearchIndexConfig(BaseModel, DBCaseConfig):
                     "m": self.M,
                 },
             }
+            
+            # Add advanced.min_batch_size_for_quantization if specified
+            if self.min_batch_size_for_quantization is not None:
+                method_config["parameters"]["advanced.min_batch_size_for_quantization"] = self.min_batch_size_for_quantization
         else:
             # FAISS and Lucene use HNSW
             method_config = {
