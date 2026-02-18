@@ -22,6 +22,15 @@ class OSSOpenSearchTypedDict(TypedDict):
     port: Annotated[int, click.option("--port", type=int, default=80, help="Db Port")]
     user: Annotated[str, click.option("--user", type=str, help="Db User")]
     password: Annotated[str, click.option("--password", type=str, help="Db password")]
+    http_compress: Annotated[
+        bool,
+        click.option(
+            "--http-compress",
+            type=bool,
+            default=True,
+            help="Enable HTTP compression (gzip) for requests/responses (default: True, set to False to disable)",
+        ),
+    ]
     number_of_shards: Annotated[
         int,
         click.option("--number-of-shards", type=int, help="Number of primary shards for the index", default=1),
@@ -197,6 +206,7 @@ def OSSOpenSearch(**parameters: Unpack[OSSOpenSearchHNSWTypedDict]):
             port=parameters["port"],
             user=parameters["user"],
             password=SecretStr(parameters["password"]),
+            http_compress=parameters["http_compress"],
         ),
         db_case_config=OSSOpenSearchIndexConfig(
             number_of_shards=parameters["number_of_shards"],

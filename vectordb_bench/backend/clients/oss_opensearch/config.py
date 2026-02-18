@@ -13,6 +13,7 @@ class OSSOpenSearchConfig(DBConfig, BaseModel):
     port: int = 80
     user: str | None = None
     password: SecretStr | None = None
+    http_compress: bool = True
 
     def to_dict(self) -> dict:
         use_ssl = self.port in [443, 9200] # noah added 1/7 support HTTPS on port 9200
@@ -25,7 +26,7 @@ class OSSOpenSearchConfig(DBConfig, BaseModel):
             "hosts": [{"host": self.host, "port": self.port}],
             "http_auth": http_auth,
             "use_ssl": use_ssl,
-            "http_compress": True,
+            "http_compress": self.http_compress,
             "verify_certs": False,  # Disable cert verification for self-signed certs
             "ssl_assert_hostname": False,
             "ssl_show_warn": False,
